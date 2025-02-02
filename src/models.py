@@ -7,24 +7,44 @@ from eralchemy2 import render_er
 
 Base = declarative_base()
 
-class Person(Base):
-    __tablename__ = 'person'
+class Planeta(Base):
+    __tablename__ = 'planetas'
     
-    id = Column(Integer, primary_key=True, nullable=False)
-    name = Column(String(250), nullable=False)
-    
-    addresses = relationship("Address", back_populates="person")
+    id_planeta = Column(Integer, primary_key=True, nullable=False)
+    tipo_planeta = Column(String(250), nullable=False)
+    ubicacion = Column(String(250), nullable=False)
 
-class Address(Base):
-    __tablename__ = 'address'
+    personajes = relationship("Personaje", back_populates="planeta")
+
+class TipoPersonaje(Base):
+    __tablename__ = 'tipos_personajes'
     
-    id = Column(Integer, primary_key=True, nullable=False)
-    person_id = Column(Integer, ForeignKey('person.id'))
-    post_code = Column(String(250), nullable=False)
-    street_name = Column(String(250))
-    street_number = Column(String(250))
+    id_tipo = Column(Integer, primary_key=True, nullable=False)
+    tipo_personaje = Column(String(250), nullable=False)
+    civilizacion = Column(String(250), nullable=False)
+
+    personajes = relationship("Personaje", back_populates="tipo")
+
+class Personaje(Base):
+    __tablename__ = 'personajes'
     
-    person = relationship("Person", back_populates="addresses")
+    id_personaje = Column(Integer, primary_key=True, nullable=False)
+    nombre = Column(String(250), nullable=False)
+    id_planeta = Column(Integer, ForeignKey('planetas.id_planeta'))
+    id_tipo = Column(Integer, ForeignKey('tipos_personajes.id_tipo'))
+    
+    planeta = relationship("Planeta", back_populates="personajes")
+    tipo = relationship("TipoPersonaje", back_populates="personajes")
+    naves = relationship("NaveEspacial", back_populates="piloto")
+
+class NaveEspacial(Base):
+    __tablename__ = 'naves_espaciales'
+    
+    id_nave = Column(Integer, primary_key=True, nullable=False)
+    tipo_nave = Column(String(250), nullable=False)
+    id_personaje = Column(Integer, ForeignKey('personajes.id_personaje'))
+    
+    piloto = relationship("Personaje", back_populates="naves")
 
     def to_dict(self):
         return {}
